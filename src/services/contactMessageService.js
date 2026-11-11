@@ -19,10 +19,17 @@ export const getContactMessages = async () => {
 };
 
 export const deleteContactMessage = async (id) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('contact_messages')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .select('id')
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) {
+    throw new Error(
+      'Nenhuma mensagem foi excluída. Verifique se sua conta é administradora e execute supabase_contact_messages_delete.sql no SQL Editor do Supabase.'
+    );
+  }
 };
